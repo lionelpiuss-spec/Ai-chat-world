@@ -3,176 +3,306 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI-CHAT-WORLD</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Chat World</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-font-family:Arial,sans-serif;
-background:#080808;color:white;
-}
-header{
-padding:22px 6%;
-display:flex;justify-content:space-between;
-align-items:center;border-bottom:1px solid #292016;
-}
-.logo{color:#e6b84b;font-size:22px;font-weight:bold}
-nav a{color:white;text-decoration:none;margin-left:15px;font-size:13px}
-.hero{text-align:center;padding:75px 20px 55px}
-.hero h1{font-size:clamp(35px,8vw,65px);color:#e6b84b}
-.hero p{color:#bbb;margin:18px auto;max-width:500px;line-height:1.6}
-.btn{
-display:inline-block;background:#e6b84b;color:#080808;
-padding:14px 25px;border-radius:7px;
-text-decoration:none;font-weight:bold;margin:8px;
-}
-.btn-outline{background:transparent;color:#e6b84b;border:1px solid #e6b84b}
-section{padding:35px 6%}
-h2{color:#e6b84b;margin-bottom:20px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-.card{
-background:#151515;border:1px solid #302719;
-border-radius:12px;padding:23px;
-}
-.card h3{margin-bottom:10px}
-.card p{color:#aaa;line-height:1.5;font-size:14px}
-.status{color:#65d68a;font-size:12px;margin-bottom:12px}
-.rank{display:flex;justify-content:space-between;padding:15px 5px;border-bottom:1px solid #292929}
-footer{text-align:center;padding:30px;color:#777;border-top:1px solid #292929;margin-top:35px}
+*{box-sizing:border-box}
+body{margin:0;background:#080b14;color:#fff;font-family:Arial,sans-serif}
+header{background:#111a2d;padding:18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.logo{font-size:21px;font-weight:bold;color:#72a7ff}
+nav{display:flex;gap:7px;overflow-x:auto;padding:12px;background:#111a2d}
+button{background:#326bff;color:white;border:0;padding:12px 16px;border-radius:9px;cursor:pointer;margin:3px}
+button:hover{background:#5988ff}
+.hero{text-align:center;padding:55px 15px;background:linear-gradient(135deg,#173d78,#28164c,#080b14)}
+.hero h1{font-size:38px}
+.container{max-width:1000px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+.card{background:#141e33;border:1px solid #293957;padding:20px;border-radius:15px}
+.card h3{color:#8db7ff}
+.section{display:none}
+.section.active{display:block}
+input,textarea{width:100%;padding:13px;margin:7px 0;background:#080e1c;border:1px solid #344663;border-radius:9px;color:white}
+textarea{min-height:85px}
+.small{color:#aab9d0;font-size:13px}
+.message{background:#202d45;padding:10px;margin:8px 0;border-radius:9px;overflow-wrap:anywhere}
+footer{text-align:center;padding:30px;color:#8495b2}
+video{width:100%;max-width:350px;border-radius:12px;background:#000}
 </style>
 </head>
 <body>
 
 <header>
-<div class="logo">AI-CHAT-WORLD</div>
-<nav>
-<a href="#home">Home</a>
-<a href="#battles">Battles</a>
-<a href="#rankings">Rankings</a>
-</nav>
+<div class="logo">🌐 AI CHAT WORLD</div>
+<div>✨ WORLDWIDE</div>
 </header>
 
-<main>
-<div class="hero" id="home">
-<h1>WELCOME TO THE WORLD</h1>
-<p>Meet people, show your style, compete in friendly challenges and discover champions around the world.</p>
-<a href="#battles" class="btn">EXPLORE BATTLES</a>
-<a href="#rankings" class="btn btn-outline">GLOBAL RANKINGS</a>
-</div>
+<nav>
+<button onclick="show('home')">Home</button>
+<button onclick="show('chat')">Global Chat</button>
+<button onclick="show('profile')">Profile</button>
+<button onclick="show('messages')">Messages</button>
+<button onclick="show('rooms')">Video Rooms</button>
+<button onclick="show('battles')">Battles</button>
+<button onclick="show('rankings')">Rankings</button>
+<button onclick="show('luxury')">Luxury</button>
+<button onclick="show('talent')">Talent</button>
+<button onclick="show('notifications')">Alerts</button>
+</nav>
 
-<section id="battles">
-<h2>THE BATTLE ARENA</h2>
-<div class="cards">
-<div class="card">
-<div class="status">● DEMO</div>
-<h3>Style Battle</h3>
-<p>Show off your fashion and creativity in a friendly challenge.</p>
+<!-- HOME -->
+<main id="home" class="section active">
+<div class="hero">
+<p>WELCOME TO YOUR WORLD</p>
+<h1>AI CHAT WORLD</h1>
+<p>Connect. Discover. Compete. Create.</p>
+<button onclick="show('chat')">Explore Community</button>
+<button onclick="show('rooms')">Video Rooms</button>
 </div>
-<div class="card">
-<div class="status">● DEMO</div>
-<h3>Luxury Showcase</h3>
-<p>Share your favourite collections and interesting items.</p>
+<div class="container">
+<h2>Explore the World</h2>
+<div class="grid">
+<div class="card"><h3>🌍 Global Chat</h3><p>Join community conversations.</p><button onclick="show('chat')">Open</button></div>
+<div class="card"><h3>👤 Profiles</h3><p>Create your identity.</p><button onclick="show('profile')">Open</button></div>
+<div class="card"><h3>💬 Messages</h3><p>Your private messages.</p><button onclick="show('messages')">Open</button></div>
+<div class="card"><h3>🎥 Video Rooms</h3><p>Private invitation rooms.</p><button onclick="show('rooms')">Open</button></div>
+<div class="card"><h3>⚔️ Battles</h3><p>Community competitions.</p><button onclick="show('battles')">Open</button></div>
+<div class="card"><h3>🏆 Rankings</h3><p>Discover top players.</p><button onclick="show('rankings')">Open</button></div>
+<div class="card"><h3>💎 Luxury Showcase</h3><p>Explore luxury collections.</p><button onclick="show('luxury')">Open</button></div>
+<div class="card"><h3>🎤 Talent Challenge</h3><p>Showcase your creativity.</p><button onclick="show('talent')">Open</button></div>
+<div class="card"><h3>🏅 Achievements</h3><p>Celebrate your progress.</p><button onclick="show('achievements')">Open</button></div>
 </div>
-<div class="card">
-<div class="status">● DEMO</div>
-<h3>Talent Challenge</h3>
-<p>Show the world what makes you unique.</p>
 </div>
-</div>
-</section>
-
-<section id="rankings">
-<h2>GLOBAL CHAMPIONS</h2>
-<div class="card">
-<div class="rank"><span>01 — World Champion</span><span>---</span></div>
-<div class="rank"><span>02 — Rising Star</span><span>---</span></div>
-<div class="rank"><span>03 — Style Legend</span><span>---</span></div>
-<p style="margin-top:15px">Live rankings will appear when the platform backend is connected.</p>
-</div>
-</section>
-
-<section>
-<h2>YOUR WORLD</h2>
-<div class="card">
-<h3>Create your identity</h3>
-<p>Profiles, verified achievements and rankings will be added when secure accounts are connected.</p>
-</div>
-</section>
 </main>
 
-<footer>
-AI-CHAT-WORLD © 2026
-<p style="margin-top:8px">Respect • Creativity • Fair Play • Safety</p>
-</footer>
-
-</body>
-</html>
-</body>
-</html>
-
-<section id="video-rooms" style="padding:30px;text-align:center;background:#101827;color:white;border-radius:18px;margin:20px;">
-  <h2>🌍 Safe 1-v-1 Rooms</h2>
-  <p>Connect with people using a private room code.</p>
-
-  <input id="roomCode" placeholder="Enter room code"
-    style="padding:14px;border-radius:10px;width:80%;max-width:280px;">
-
-  <br><br>
-
-  <button onclick="createRoom()">Create Room</button>
-  <button onclick="joinRoom()">Join Room</button>
-
-  <p id="roomStatus">Waiting for you...</p>
-
-  <div id="videoArea" style="display:none;">
-    <video id="localVideo" autoplay muted playsinline
-      style="width:100%;max-width:320px;border-radius:15px;"></video>
-    <br>
-    <button onclick="startCamera()">Turn on camera</button>
-    <button onclick="endCall()">End</button>
-  </div>
+<!-- GLOBAL CHAT -->
+<section id="chat" class="section container">
+<h2>🌍 Global Chat</h2>
+<p class="small">Local demo. A shared chat server will be connected later.</p>
+<div id="chatList"></div>
+<input id="chatInput" placeholder="Write a message">
+<button onclick="sendChat()">Send</button>
 </section>
 
+<!-- PROFILE -->
+<section id="profile" class="section container">
+<h2>👤 My Profile</h2>
+<input id="name" placeholder="Username">
+<textarea id="bio" placeholder="Tell people about yourself"></textarea>
+<button onclick="saveProfile()">Save Profile</button>
+<div class="card" id="profileDisplay">Your profile will appear here.</div>
+</section>
+
+<!-- PRIVATE MESSAGES -->
+<section id="messages" class="section container">
+<h2>💬 Private Messages</h2>
+<p class="small">Demo inbox. Real private messaging requires accounts and a secure server.</p>
+<input id="recipient" placeholder="Recipient username">
+<textarea id="privateText" placeholder="Write your message"></textarea>
+<button onclick="sendPrivate()">Send Message</button>
+<div id="privateList"></div>
+</section>
+
+<!-- VIDEO ROOMS -->
+<section id="rooms" class="section container">
+<h2>🎥 Safe 1-v-1 Rooms</h2>
+<p>Use a private invitation code with someone you know and trust.</p>
+<input id="roomCode" placeholder="Room invitation code">
+<button onclick="createRoom()">Create Room</button>
+<button onclick="joinRoom()">Enter Code</button>
+<p id="roomStatus">No room connected.</p>
+<button onclick="startCamera()">Turn On Camera</button>
+<br>
+<video id="camera" autoplay muted playsinline></video>
+<br>
+<button onclick="stopCamera()">Turn Camera Off</button>
+<p class="small">Camera preview only. Real two-person video calls require a secure WebRTC signaling server.</p>
+</section>
+
+<!-- BATTLES -->
+<section id="battles" class="section container">
+<h2>⚔️ Battles</h2>
+<div class="grid">
+<div class="card"><h3>Style Battle</h3><p>Compare creative fashion ideas.</p><button onclick="show('style')">Enter</button></div>
+<div class="card"><h3>Talent Battle</h3><p>Show your creative skills.</p><button onclick="show('talent')">Enter</button></div>
+<div class="card"><h3>Community Battle</h3><p>Community competitions coming soon.</p></div>
+</div>
+</section>
+
+<!-- STYLE -->
+<section id="style" class="section container">
+<h2>👕 Style Battle</h2>
+<p>Share your fashion ideas and let the community vote.</p>
+<input id="styleIdea" placeholder="Describe your style">
+<button onclick="postIdea('styleIdea','styleList')">Submit Style</button>
+<div id="styleList"></div>
+</section>
+
+<!-- RANKINGS -->
+<section id="rankings" class="section container">
+<h2>🏆 Global Rankings</h2>
+<div class="card">
+<h3>Global Leaderboard</h3>
+<p>🥇 Rankings will appear when real user accounts and activity data are connected.</p>
+<p class="small">No invented scores or fake online users.</p>
+</div>
+</section>
+
+<!-- LUXURY -->
+<section id="luxury" class="section container">
+<h2>💎 Luxury Showcase</h2>
+<div class="grid">
+<div class="card"><h3>🚘 Luxury Cars</h3><p>Discover premium cars.</p></div>
+<div class="card"><h3>⌚ Watches</h3><p>Explore timepieces.</p></div>
+<div class="card"><h3>🏡 Mansions</h3><p>Discover beautiful homes.</p></div>
+<div class="card"><h3>👟 Fashion</h3><p>Explore fashion collections.</p></div>
+<div class="card"><h3>💍 Jewellery</h3><p>Discover jewellery designs.</p></div>
+<div class="card"><h3>🛥️ Yachts</h3><p>Explore luxury yachts.</p></div>
+</div>
+</section>
+
+<!-- TALENT -->
+<section id="talent" class="section container">
+<h2>🎤 Talent Challenge</h2>
+<p>Showcase your creativity and skills.</p>
+<input id="talentName" placeholder="Your talent title">
+<textarea id="talentDesc" placeholder="Describe your talent"></textarea>
+<button onclick="postTalent()">Submit Talent</button>
+<div id="talentList"></div>
+</section>
+
+<!-- NOTIFICATIONS -->
+<section id="notifications" class="section container">
+<h2>🔔 Notifications</h2>
+<div id="alerts" class="card">Welcome to AI Chat World!</div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements" class="section container">
+<h2>🏅 Achievements</h2>
+<div class="grid">
+<div class="card"><h3>🌟 New Member</h3><p>Welcome to AI Chat World.</p></div>
+<div class="card"><h3>💬 Conversation Starter</h3><p>Coming soon.</p></div>
+<div class="card"><h3>🏆 Champion</h3><p>Coming soon.</p></div>
+<div class="card"><h3>🎤 Creator</h3><p>Coming soon.</p></div>
+</div>
+</section>
+
+<footer>
+AI CHAT WORLD © 2026<br>
+Connect • Discover • Compete • Create
+</footer>
+
 <script>
-let localStream = null;
-
-function createRoom() {
-  const code = Math.random().toString(36).slice(2,8).toUpperCase();
-  document.getElementById("roomCode").value = code;
-  document.getElementById("roomStatus").innerText =
-    "Room created: " + code + ". Share this code privately.";
+function show(id){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+window.scrollTo(0,0);
 }
 
-function joinRoom() {
-  const code = document.getElementById("roomCode").value.trim();
-  document.getElementById("roomStatus").innerText =
-    code ? "Room code entered: " + code + ". Video matching server still needs setup." :
-    "Please enter a room code.";
+function store(key,value){
+localStorage.setItem(key,JSON.stringify(value));
+}
+function read(key){
+try{return JSON.parse(localStorage.getItem(key))||[]}
+catch(e){return []}
 }
 
-async function startCamera() {
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    });
-    document.getElementById("localVideo").srcObject = localStream;
-    document.getElementById("videoArea").style.display = "block";
-    document.getElementById("roomStatus").innerText = "Camera is on.";
-  } catch (error) {
-    document.getElementById("roomStatus").innerText =
-      "Camera permission unavailable. Check browser permissions.";
-  }
+let chats=read('aiChats');
+function renderChats(){
+document.getElementById('chatList').innerHTML='';
+chats.forEach(m=>{
+let p=document.createElement('div');
+p.className='message';
+p.textContent=m;
+document.getElementById('chatList').appendChild(p);
+});
+}
+function sendChat(){
+let input=document.getElementById('chatInput');
+if(!input.value.trim())return;
+chats.push((localStorage.getItem('aiName')||'Guest')+': '+input.value);
+store('aiChats',chats);
+input.value='';
+renderChats();
 }
 
-function endCall() {
-  if (localStream) {
-    localStream.getTracks().forEach(track => track.stop());
-    localStream = null;
-  }
-  document.getElementById("localVideo").srcObject = null;
-  document.getElementById("videoArea").style.display = "none";
-  document.getElementById("roomStatus").innerText = "Camera stopped.";
+function saveProfile(){
+let n=document.getElementById('name').value.trim();
+let b=document.getElementById('bio').value.trim();
+if(!n)return alert('Enter a username');
+localStorage.setItem('aiName',n);
+localStorage.setItem('aiBio',b);
+document.getElementById('profileDisplay').textContent=n+' — '+b;
 }
+
+function sendPrivate(){
+let to=document.getElementById('recipient').value.trim();
+let msg=document.getElementById('privateText').value.trim();
+if(!to||!msg)return alert('Enter a recipient and message');
+let items=read('aiPrivate');
+items.push('To '+to+': '+msg);
+store('aiPrivate',items);
+document.getElementById('privateText').value='';
+renderPrivate();
+}
+function renderPrivate(){
+let el=document.getElementById('privateList');
+el.innerHTML='';
+read('aiPrivate').forEach(m=>{
+let p=document.createElement('div');
+p.className='message';
+p.textContent=m;
+el.appendChild(p);
+});
+}
+
+function createRoom(){
+let c=Math.random().toString(36).slice(2,8).toUpperCase();
+document.getElementById('roomCode').value=c;
+document.getElementById('roomStatus').textContent='Invitation code: '+c;
+}
+function joinRoom(){
+let c=document.getElementById('roomCode').value.trim();
+document.getElementById('roomStatus').textContent=c?'Code entered. A live room server is still needed.':'Enter a room code.';
+}
+
+let stream=null;
+async function startCamera(){
+try{
+stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+document.getElementById('camera').srcObject=stream;
+}catch(e){
+document.getElementById('roomStatus').textContent='Camera permission unavailable.';
+}
+}
+function stopCamera(){
+if(stream)stream.getTracks().forEach(t=>t.stop());
+stream=null;
+document.getElementById('camera').srcObject=null;
+}
+
+function postIdea(inputId,listId){
+let value=document.getElementById(inputId).value.trim();
+if(!value)return;
+let p=document.createElement('div');
+p.className='message';
+p.textContent=value;
+document.getElementById(listId).appendChild(p);
+document.getElementById(inputId).value='';
+}
+function postTalent(){
+let n=document.getElementById('talentName').value.trim();
+let d=document.getElementById('talentDesc').value.trim();
+if(!n||!d)return alert('Complete both fields');
+let p=document.createElement('div');
+p.className='message';
+p.textContent=n+': '+d;
+document.getElementById('talentList').appendChild(p);
+}
+
+renderChats();
+renderPrivate();
 </script>
-
+</body>
+  </html>
+  
