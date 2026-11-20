@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lionel AI</title>
+<style>
+body {
+  background: #10101c;
+  color: white;
+  font-family: Arial;
+  margin: 0;
+}
+header {
+  background: #202039;
+  padding: 22px;
+  text-align: center;
+  font-size: 25px;
+  font-weight: bold;
+}
+h2 { text-align: center; }
+.characters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  padding: 15px;
+}
+.character {
+  background: #292943;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+}
+button {
+  background: #7957ff;
+  color: white;
+  border: 0;
+  padding: 12px;
+  border-radius: 10px;
+}
+#chat { padding: 15px; display: none; }
+#messages {
+  height: 300px;
+  overflow: auto;
+  background: #202039;
+  padding: 12px;
+  border-radius: 12px;
+}
+input {
+  padding: 12px;
+  width: 65%;
+}
+</style>
+</head>
+<body>
+
+<header>✦ LIONEL AI</header>
+<h2>Choose your AI character</h2>
+
+<div class="characters" id="characters">
+<div class="character">
+<h3>Alex</h3>
+<p>Friendly companion</p>
+<button onclick="start('Alex')">Chat</button>
+</div>
+<div class="character">
+<h3>Sophia</h3>
+<p>Funny and creative</p>
+<button onclick="start('Sophia')">Chat</button>
+</div>
+<div class="character">
+<h3>Leo</h3>
+<p>Gaming expert</p>
+<button onclick="start('Leo')">Chat</button>
+</div>
+<div class="character">
+<h3>Mia</h3>
+<p>Music lover</p>
+<button onclick="start('Mia')">Chat</button>
+</div>
+</div>
+
+<div id="chat">
+<h2 id="title"></h2>
+<div id="messages"></div>
+<br>
+<input id="msg" placeholder="Write a message">
+<button onclick="send()">Send</button>
+<br><br>
+<button onclick="back()">Back</button>
+</div>
+
+<script>
+let character = "";
+
+function start(name) {
+ character = name;
+ document.getElementById("characters").style.display="none";
+ document.getElementById("chat").style.display="block";
+ document.getElementById("title").textContent=name;
+ document.getElementById("messages").textContent="Welcome! This is a demo chat.";
+}
+
+function send() {
+ let box=document.getElementById("msg");
+ let message=box.value.trim();
+ if(!message)return;
+
+ let area=document.getElementById("messages");
+ let p=document.createElement("p");
+ p.textContent="You: "+message;
+ area.appendChild(p);
+
+ let reply=document.createElement("p");
+ reply.textContent="AI: I'm a demo character. Real AI connection coming soon!";
+ area.appendChild(reply);
+
+ box.value="";
+}
+
+function back() {
+ document.getElementById("chat").style.display="none";
+ document.getElementById("characters").style.display="grid";
+}
+</script>
+
+</body>
+  </html>
+  
