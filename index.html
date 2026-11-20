@@ -107,4 +107,72 @@ AI-CHAT-WORLD © 2026
 
 </body>
 </html>
+</body>
+</html>
+
+<section id="video-rooms" style="padding:30px;text-align:center;background:#101827;color:white;border-radius:18px;margin:20px;">
+  <h2>🌍 Safe 1-v-1 Rooms</h2>
+  <p>Connect with people using a private room code.</p>
+
+  <input id="roomCode" placeholder="Enter room code"
+    style="padding:14px;border-radius:10px;width:80%;max-width:280px;">
+
+  <br><br>
+
+  <button onclick="createRoom()">Create Room</button>
+  <button onclick="joinRoom()">Join Room</button>
+
+  <p id="roomStatus">Waiting for you...</p>
+
+  <div id="videoArea" style="display:none;">
+    <video id="localVideo" autoplay muted playsinline
+      style="width:100%;max-width:320px;border-radius:15px;"></video>
+    <br>
+    <button onclick="startCamera()">Turn on camera</button>
+    <button onclick="endCall()">End</button>
+  </div>
+</section>
+
+<script>
+let localStream = null;
+
+function createRoom() {
+  const code = Math.random().toString(36).slice(2,8).toUpperCase();
+  document.getElementById("roomCode").value = code;
+  document.getElementById("roomStatus").innerText =
+    "Room created: " + code + ". Share this code privately.";
+}
+
+function joinRoom() {
+  const code = document.getElementById("roomCode").value.trim();
+  document.getElementById("roomStatus").innerText =
+    code ? "Room code entered: " + code + ". Video matching server still needs setup." :
+    "Please enter a room code.";
+}
+
+async function startCamera() {
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+    document.getElementById("localVideo").srcObject = localStream;
+    document.getElementById("videoArea").style.display = "block";
+    document.getElementById("roomStatus").innerText = "Camera is on.";
+  } catch (error) {
+    document.getElementById("roomStatus").innerText =
+      "Camera permission unavailable. Check browser permissions.";
+  }
+}
+
+function endCall() {
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+  document.getElementById("localVideo").srcObject = null;
+  document.getElementById("videoArea").style.display = "none";
+  document.getElementById("roomStatus").innerText = "Camera stopped.";
+}
+</script>
 
