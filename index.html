@@ -402,6 +402,45 @@ async function showBattleProfile() {
 }
 </script>
  
+<section id="random-chat" style="background:#111420;padding:30px;margin:30px auto;max-width:500px;border-radius:16px;text-align:center;color:white">
+  <h2>🌍 Random Chat</h2>
+  <p>Meet real people around the world.</p>
+  <button class="btn primary" onclick="connectRandomChat()">
+    Find Someone
+  </button>
+  <p id="randomStatus" style="margin-top:20px;color:#c4b5fd"></p>
+</section>
+
+<script>
+async function connectRandomChat() {
+  const status = document.getElementById("randomStatus");
+
+  status.textContent = "Connecting...";
+
+  const { data: { user }, error: authError } =
+    await supabaseClient.auth.getUser();
+
+  if (authError || !user) {
+    status.textContent = "Please log in first.";
+    return;
+  }
+
+  const { data, error } =
+    await supabaseClient.rpc("find_match");
+
+  if (error) {
+    status.textContent = "Matching error: " + error.message;
+    return;
+  }
+
+  if (data) {
+    status.textContent = "Match found! Room ID: " + data;
+  } else {
+    status.textContent = "Waiting for another player...";
+  }
+}
+</script>
+ 
  </script>
 </body>
 </html>
