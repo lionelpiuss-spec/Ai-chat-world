@@ -461,3 +461,357 @@ console.log("AI Chat World connected to Supabase!");
 <h2>Join AI Chat World</h2>
 <p>Create your account and meet real people.</p>
 </section>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Chat World</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090d18;color:white;font-family:Arial,sans-serif}
+header{padding:18px 6%;display:flex;justify-content:space-between;align-items:center;background:#11182a}
+.logo{font-size:22px;font-weight:bold;color:#70a5ff}
+nav a{color:white;text-decoration:none;margin-left:14px}
+main{max-width:950px;margin:auto;padding:35px 18px}
+.hero{text-align:center;padding:55px 12px}
+h1{font-size:42px;margin-bottom:10px}
+p{color:#bdc7d9;line-height:1.5}
+.card{background:#151e32;border:1px solid #283653;border-radius:16px;padding:22px;margin:18px 0}
+input,textarea{width:100%;padding:13px;margin:7px 0;background:#0c1425;border:1px solid #34435e;border-radius:9px;color:white}
+button{padding:12px 17px;border:0;border-radius:9px;background:#397cf5;color:white;font-weight:bold;margin:5px;cursor:pointer}
+button.secondary{background:#293750}
+button:disabled{opacity:.5}
+.hidden{display:none}
+#messages{height:220px;overflow:auto;background:#0c1425;padding:12px;border-radius:10px}
+.status{color:#82b4ff}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">AI CHAT WORLD</div>
+<nav>
+<a href="#home">Home</a>
+<a href="#chat">Chat</a>
+<a href="#battles">Battles</a>
+</nav>
+</header>
+
+<main>
+<section class="hero" id="home">
+<h1>Meet Real People.</h1>
+<p>Connect, chat and compete in AI Chat World.</p>
+<p class="status" id="status">Connect your Supabase project to get started.</p>
+</section>
+
+<section class="card" id="account">
+<h2>Your account</h2>
+<input id="email" type="email" placeholder="Email address">
+<input id="password" type="password" placeholder="Password">
+<input id="username" placeholder="Choose a username">
+<button onclick="signUp()">Create account</button>
+<button class="secondary" onclick="signIn()">Log in</button>
+<button class="secondary" onclick="signOut()">Log out</button>
+<p id="accountStatus"></p>
+</section>
+
+<section class="card hidden" id="chat">
+<h2>Random text chat</h2>
+<p>Match with another signed-in member. Don't share personal details.</p>
+<button onclick="findMatch()">Find a chat partner</button>
+<button class="secondary" onclick="leaveMatch()">Leave chat</button>
+<p id="matchStatus">Not matched yet.</p>
+<div id="messages"></div>
+<input id="messageInput" maxlength="1000" placeholder="Write a message">
+<button onclick="sendMessage()">Send message</button>
+<button class="secondary" onclick="blockPartner()">Block partner</button>
+<button class="secondary" onclick="reportPartner()">Report partner</button>
+</section>
+
+<section class="card" id="battles">
+<h2>AI Chat World Battles</h2>
+<p>Battle features are being prepared.</p>
+<button onclick="findMatch()">Find a text chat match</button>
+<h3>Leaderboard</h3>
+<button class="secondary" onclick="loadLeaderboard()">Load leaderboard</button>
+<div id="leaderboard"></div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ADD YOUR OWN SUPABASE PROJECT DETAILS */
+const SUPABASE_URL = "ADD_YOUR_PROJECT_URL";
+const SUPABASE_KEY = "ADD_YOUR_PUBLISHABLE_KEY";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let currentRoom = null;
+let partnerId = null;
+let messageChannel = null;
+
+const statusText = document.getElementById("status");
+const accountStatus = document.getElementById("accountStatus");
+const matchStatus = document.getElementById("matchStatus");
+
+function showStatus(message){
+  statusText.textContent = message;
+}
+
+async function getUser(){
+  const {data,error} = await supabaseClient.auth.getUser();
+  if(error) throw error;
+  return data.user;
+}
+
+async function signUp(){
+  try{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+
+    if(!email || !password || !username){
+      accountStatus.textContent = "Fill in all three fields.";
+      return;
+    }
+
+    if(username.length < 3 || username.length > 20){
+      accountStatus.textContent = "Username must be 3–20 characters.";
+      return;
+    }
+
+    const {data,error} = await supabaseClient.auth.signUp({
+      email,password
+    });
+    if(error) throw error;
+
+    if(data.user && data.session){
+      const {error:profileError} = await supabaseClient
+        .from("profiles")
+        .upsert({id:data.user.id,username},{onConflict:"id"});
+      if(profileError) throw profileError;
+    }
+
+    accountStatus.textContent =
+      "Account created. Check your email if confirmation is requested.";
+    await refreshAccount();
+  }catch(error){
+    accountStatus.textContent = error.message;
+  }
+}
+
+async function signIn(){
+  try{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const {data,error} = await supabaseClient.auth.signInWithPassword({
+      email,password
+    });
+    if(error) throw error;
+
+    const username = document.getElementById("username").value.trim();
+    if(username){
+      const {error:profileError} = await supabaseClient
+        .from("profiles")
+        .upsert({id:data.user.id,username},{onConflict:"id"});
+      if(profileError) throw profileError;
+    }
+
+    accountStatus.textContent = "Logged in.";
+    await refreshAccount();
+  }catch(error){
+    accountStatus.textContent = error.message;
+  }
+}
+
+async function signOut(){
+  await leaveMatch();
+  const {error} = await supabaseClient.auth.signOut();
+  accountStatus.textContent = error ? error.message : "Logged out.";
+  await refreshAccount();
+}
+
+async function refreshAccount(){
+  try{
+    const user = await getUser();
+    document.getElementById("chat").classList.toggle("hidden",!user);
+    accountStatus.textContent = user ? "Signed in as " + user.email : "Please log in.";
+  }catch(error){
+    accountStatus.textContent = error.message;
+  }
+}
+
+async function findMatch(){
+  try{
+    const user = await getUser();
+    if(!user){
+      matchStatus.textContent = "Please log in first.";
+      return;
+    }
+
+    matchStatus.textContent = "Searching for a member...";
+    const {data,error} = await supabaseClient.rpc("find_match");
+    if(error) throw error;
+
+    if(!data){
+      matchStatus.textContent = "Waiting for another member to join. Try again shortly.";
+      return;
+    }
+
+    currentRoom = data;
+    const {data:players,error:playersError} = await supabaseClient
+      .from("room_players")
+      .select("user_id")
+      .eq("room_id",currentRoom);
+
+    if(playersError) throw playersError;
+
+    partnerId = players?.find(p=>p.user_id!==user.id)?.user_id || null;
+    matchStatus.textContent = partnerId
+      ? "Match found! You can start chatting."
+      : "Room found. Waiting for your partner.";
+    await loadMessages();
+    subscribeMessages();
+  }catch(error){
+    matchStatus.textContent = error.message;
+  }
+}
+
+async function loadMessages(){
+  if(!currentRoom) return;
+  const {data,error} = await supabaseClient
+    .from("messages")
+    .select("sender_id,content,created_at")
+    .eq("room_id",currentRoom)
+    .order("created_at",{ascending:true});
+
+  if(error){
+    matchStatus.textContent = error.message;
+    return;
+  }
+
+  const box = document.getElementById("messages");
+  box.innerHTML = "";
+  (data || []).forEach(addMessage);
+}
+
+function addMessage(message){
+  const box = document.getElementById("messages");
+  const line = document.createElement("p");
+  line.textContent = (message.sender_id === partnerId ? "Partner: " : "You: ") + message.content;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function subscribeMessages(){
+  if(messageChannel){
+    supabaseClient.removeChannel(messageChannel);
+  }
+  messageChannel = supabaseClient
+    .channel("room-" + currentRoom)
+    .on("postgres_changes",{
+      event:"INSERT",
+      schema:"public",
+      table:"messages",
+      filter:"room_id=eq." + currentRoom
+    },payload=>addMessage(payload.new))
+    .subscribe();
+}
+
+async function sendMessage(){
+  try{
+    const user = await getUser();
+    const input = document.getElementById("messageInput");
+    const content = input.value.trim();
+    if(!user || !currentRoom || !content) return;
+
+    const {error} = await supabaseClient.from("messages").insert({
+      room_id:currentRoom,
+      sender_id:user.id,
+      content
+    });
+    if(error) throw error;
+    input.value = "";
+  }catch(error){
+    matchStatus.textContent = error.message;
+  }
+}
+
+async function leaveMatch(){
+  if(messageChannel){
+    await supabaseClient.removeChannel(messageChannel);
+    messageChannel = null;
+  }
+  currentRoom = null;
+  partnerId = null;
+  document.getElementById("messages").innerHTML = "";
+  matchStatus.textContent = "You left the chat.";
+}
+
+async function blockPartner(){
+  try{
+    const user = await getUser();
+    if(!user || !partnerId) return;
+    const {error} = await supabaseClient.from("blocked_users").insert({
+      blocker_id:user.id,blocked_id:partnerId
+    });
+    if(error) throw error;
+    await leaveMatch();
+    matchStatus.textContent = "Member blocked.";
+  }catch(error){
+    matchStatus.textContent = error.message;
+  }
+}
+
+async function reportPartner(){
+  try{
+    const user = await getUser();
+    if(!user || !partnerId) return;
+    const reason = prompt("Briefly explain the concern:");
+    if(!reason) return;
+    const {error} = await supabaseClient.from("reports").insert({
+      reporter_id:user.id,reported_id:partnerId,reason:reason.slice(0,500)
+    });
+    if(error) throw error;
+    matchStatus.textContent = "Report submitted.";
+  }catch(error){
+    matchStatus.textContent = error.message;
+  }
+}
+
+async function loadLeaderboard(){
+  const output = document.getElementById("leaderboard");
+  output.textContent = "Loading...";
+  const {data,error} = await supabaseClient
+    .from("profiles")
+    .select("username,rating")
+    .order("rating",{ascending:false})
+    .limit(20);
+
+  if(error){
+    output.textContent = error.message;
+    return;
+  }
+
+  output.innerHTML = "";
+  (data || []).forEach((player,index)=>{
+    const row = document.createElement("p");
+    row.textContent = (index+1) + ". " + player.username + " — " + player.rating;
+    output.appendChild(row);
+  });
+}
+
+supabaseClient.auth.onAuthStateChange(()=>{
+  setTimeout(refreshAccount,0);
+});
+
+refreshAccount();
+showStatus("Supabase setup: add your project details.");
+</script>
+</body>
+</html>
