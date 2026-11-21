@@ -3,483 +3,323 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>VYBEX - Island Odyssey</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;overflow:hidden;background:#62c9e8;font-family:Arial;color:white}
+body{margin:0;overflow:hidden;font-family:Arial;background:#72d6ed}
 canvas{display:block}
-#hud{position:fixed;top:12px;left:12px;z-index:5}
-.panel{background:#071d2ccc;padding:12px 16px;border:1px solid #ffffff44;border-radius:14px}
-#title{font-size:19px;font-weight:bold;color:#69e5ff}
-#mission{font-size:13px;margin-top:6px}
-#coins{margin-top:7px;color:#ffe16b}
-#help{position:fixed;top:12px;right:12px;z-index:5;text-align:right;font-size:12px}
-#controls{position:fixed;bottom:20px;left:20px;right:20px;z-index:5;display:flex;justify-content:space-between;align-items:end;pointer-events:none}
-#stick{width:120px;height:120px;border-radius:50%;background:#ffffff30;border:2px solid #ffffff80;position:relative;pointer-events:auto;touch-action:none}
-#knob{width:48px;height:48px;border-radius:50%;background:#ffffffbb;position:absolute;left:34px;top:34px}
-#actions{display:flex;gap:12px;pointer-events:auto}
-.action{width:65px;height:65px;border-radius:50%;border:2px solid white;background:#087caa;color:white;font-weight:bold;font-size:13px;touch-action:none}
-#message{position:fixed;bottom:155px;left:50%;transform:translateX(-50%);background:#071d2ccc;padding:10px 16px;border-radius:12px;z-index:5;text-align:center;font-size:13px;white-space:nowrap}
-#start{position:fixed;inset:0;background:linear-gradient(#063e62aa,#031a32ee);z-index:10;display:flex;align-items:center;justify-content:center;text-align:center}
-#startBox{padding:25px;max-width:350px}
-#start h1{font-size:34px;color:#6ceaff}
-#start button{padding:15px 30px;border:0;border-radius:12px;background:#00bde9;color:#001c2a;font-size:17px;font-weight:bold}
+#hud{position:fixed;top:12px;left:12px;z-index:2;background:#08283ddd;padding:12px;border-radius:12px;color:white}
+#mission{font-size:13px;margin-top:8px}
+#controls{position:fixed;bottom:20px;left:20px;right:20px;display:flex;justify-content:space-between;z-index:3}
+#stick{width:120px;height:120px;border:2px solid #fff9;border-radius:50%;background:#ffffff33;position:relative;touch-action:none}
+#knob{position:absolute;width:45px;height:45px;border-radius:50%;background:white;left:35px;top:35px}
+button{border:0;border-radius:14px;padding:15px;background:#087ca5;color:white;font-weight:bold}
+#start{position:fixed;inset:0;background:linear-gradient(#063b60aa,#031a32ee);z-index:10;display:grid;place-items:center;text-align:center;color:white}
+#start button{background:#11d8c0;color:#042b35;font-size:18px}
+#message{position:fixed;bottom:155px;left:50%;transform:translateX(-50%);z-index:2;background:#08283ddd;color:white;padding:10px;border-radius:10px;white-space:nowrap}
 </style>
 </head>
 <body>
-
 <div id="hud">
- <div class="panel">
-  <div id="title">VYBEX 🌴</div>
-  <div>ISLAND ODYSSEY</div>
-  <div id="mission">Mission: Find the hidden treasure</div>
-  <div id="coins">🪙 Coins: <span id="score">0</span></div>
- </div>
+ <b style="font-size:20px;color:#65eaff">VYBEX</b><br>
+ ISLAND ODYSSEY
+ <div>🪙 Coins: <span id="coins">0</span></div>
+ <div id="mission">Mission: Find the treasure</div>
 </div>
-
-<div id="help" class="panel">
- Explore the island<br>
- WASD / Arrow keys<br>
- E = Collect treasure
-</div>
-
-<div id="message">Explore the island and find the treasure!</div>
-
+<div id="message">Explore the island!</div>
 <div id="controls">
  <div id="stick"><div id="knob"></div></div>
- <div id="actions">
-  <button class="action" id="run">RUN</button>
-  <button class="action" id="interact">PICK UP</button>
- </div>
+ <button id="collect">PICK UP</button>
 </div>
-
 <div id="start">
- <div id="startBox">
-  <h1>VYBEX</h1>
+ <div>
+  <h1 style="font-size:38px;color:#62eaff">VYBEX</h1>
   <h2>ISLAND ODYSSEY</h2>
-  <p>Discover a tropical world. Explore beaches, forests and hidden treasures.</p>
+  <p>Explore the tropical island.</p>
+  <p>Find hidden treasure and discover new places.</p>
   <button id="play">ENTER ISLAND</button>
  </div>
 </div>
 
 <script type="importmap">
-{
- "imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
- }
-}
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
 </script>
-
 <script type="module">
 import * as THREE from "three";
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87d9f5);
-scene.fog = new THREE.Fog(0x87d9f5,90,190);
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x85d9f5);
+scene.fog=new THREE.Fog(0x85d9f5,90,180);
 
-const camera = new THREE.PerspectiveCamera(
- 65,window.innerWidth/window.innerHeight,0.1,400
-);
-
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth,window.innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,300);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.shadowMap.enabled=true;
 document.body.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xc8f3ff,0x557044,2));
-
-const sun = new THREE.DirectionalLight(0xffffff,2.3);
-sun.position.set(-40,70,30);
-sun.castShadow = true;
-sun.shadow.mapSize.set(1024,1024);
+scene.add(new THREE.HemisphereLight(0xc8f5ff,0x476b37,2));
+const sun=new THREE.DirectionalLight(0xffffff,2);
+sun.position.set(-30,60,30);
+sun.castShadow=true;
 scene.add(sun);
 
-// MATERIALS
-const sand = new THREE.MeshStandardMaterial({color:0xe9d19a});
-const grass = new THREE.MeshStandardMaterial({color:0x399b55});
-const wood = new THREE.MeshStandardMaterial({color:0x80502d});
-const leaf = new THREE.MeshStandardMaterial({color:0x16834c});
-const waterMat = new THREE.MeshStandardMaterial({
- color:0x078fc1,
- roughness:0.25,
- metalness:0.18,
- transparent:true,
- opacity:0.92
-});
+const mat=(color)=>new THREE.MeshStandardMaterial({color});
+const grass=mat(0x37994d);
+const sand=mat(0xe9d09a);
+const wood=mat(0x80502d);
+const green=mat(0x16834c);
 
-// ISLAND TERRAIN
 function heightAt(x,z){
- const d=Math.sqrt(x*x+z*z);
- return Math.max(0,5-d*0.075)+
- Math.sin(x*.16)*Math.cos(z*.13)*1.1+
- Math.sin(z*.31+x*.1)*.4;
+ return Math.max(0,5-Math.hypot(x,z)*.075)
+ +Math.sin(x*.16)*Math.cos(z*.13);
 }
 
-const geo = new THREE.PlaneGeometry(125,125,110,110);
-geo.rotateX(-Math.PI/2);
-const pos=geo.attributes.position;
-
-for(let i=0;i<pos.count;i++){
- const x=pos.getX(i),z=pos.getZ(i);
- const d=Math.sqrt(x*x+z*z);
- pos.setY(i,heightAt(x,z)-Math.max(0,d-45)*.22);
+// Island ground
+const terrain=new THREE.PlaneGeometry(125,125,90,90);
+terrain.rotateX(-Math.PI/2);
+const p=terrain.attributes.position;
+for(let i=0;i<p.count;i++){
+ let x=p.getX(i),z=p.getZ(i);
+ p.setY(i,heightAt(x,z)-Math.max(0,Math.hypot(x,z)-45)*.2);
 }
-geo.computeVertexNormals();
+terrain.computeVertexNormals();
+const land=new THREE.Mesh(terrain,grass);
+land.receiveShadow=true;
+scene.add(land);
 
-const island = new THREE.Mesh(geo,grass);
-island.receiveShadow=true;
-scene.add(island);
-
-// BEACH RING
-const beachGeo = new THREE.RingGeometry(43,57,100);
-beachGeo.rotateX(-Math.PI/2);
-const beach = new THREE.Mesh(beachGeo,sand);
-beach.position.y=.05;
+// Beach
+const beach=new THREE.Mesh(
+ new THREE.RingGeometry(43,56,100),
+ sand
+);
+beach.rotation.x=-Math.PI/2;
+beach.position.y=.03;
 scene.add(beach);
 
-// OCEAN
-const waterGeo=new THREE.PlaneGeometry(260,260,100,100);
-waterGeo.rotateX(-Math.PI/2);
-const water=new THREE.Mesh(waterGeo,waterMat);
-water.position.y=-1.3;
-scene.add(water);
-const waterPositions=waterGeo.attributes.position;
-const originalWater=[];
-for(let i=0;i<waterPositions.count;i++){
- originalWater.push(waterPositions.getY(i));
-}
+// Ocean
+const oceanGeo=new THREE.PlaneGeometry(260,260,70,70);
+oceanGeo.rotateX(-Math.PI/2);
+const ocean=new THREE.Mesh(oceanGeo,
+ new THREE.MeshStandardMaterial({
+  color:0x078fc5,roughness:.25,metalness:.15
+ })
+);
+ocean.position.y=-1.4;
+scene.add(ocean);
+const waterPos=oceanGeo.attributes.position;
+const base=[];
+for(let i=0;i<waterPos.count;i++)base.push(waterPos.getY(i));
 
-// OBJECT HELPERS
-function box(x,y,z,sx,sy,sz,mat){
- const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat);
- m.position.set(x,y,z);
- m.castShadow=true;
- m.receiveShadow=true;
- scene.add(m);
- return m;
-}
-
-function cylinder(x,y,z,r1,r2,h,mat){
- const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,10),mat);
- m.position.set(x,y,z);
- m.castShadow=true;
- scene.add(m);
- return m;
-}
-
-// PALM TREES
-function palm(x,z){
+// Tree helper
+function tree(x,z){
  const y=heightAt(x,z);
- cylinder(x,y+3,z,.35,.55,6,wood);
-
- for(let i=0;i<7;i++){
-  const a=i*Math.PI*2/7;
-  const branch=new THREE.Mesh(
-   new THREE.ConeGeometry(.55,4,5),leaf
-  );
-  branch.position.set(
-   x+Math.cos(a)*1.3,
-   y+5.1,
-   z+Math.sin(a)*1.3
-  );
-  branch.rotation.z=Math.cos(a)*.9;
-  branch.rotation.x=Math.sin(a)*.9;
-  branch.castShadow=true;
-  scene.add(branch);
- }
- const crown=new THREE.Mesh(
-  new THREE.SphereGeometry(.7,8,8),leaf
+ const trunk=new THREE.Mesh(
+  new THREE.CylinderGeometry(.25,.45,5,8),wood
  );
- crown.position.set(x,y+5.7,z);
- scene.add(crown);
+ trunk.position.set(x,y+2.5,z);
+ trunk.castShadow=true;
+ scene.add(trunk);
+ for(let i=0;i<6;i++){
+  const a=i*Math.PI/3;
+  const leaf=new THREE.Mesh(
+   new THREE.ConeGeometry(.7,4,5),green
+  );
+  leaf.position.set(
+   x+Math.cos(a)*1.1,y+5,z+Math.sin(a)*1.1
+  );
+  leaf.rotation.z=Math.cos(a)*.8;
+  leaf.rotation.x=Math.sin(a)*.8;
+  scene.add(leaf);
+ }
 }
-
-// FOREST
 for(let i=0;i<100;i++){
  const a=Math.random()*Math.PI*2;
- const r=14+Math.random()*34;
- const x=Math.cos(a)*r,z=Math.sin(a)*r;
- if(Math.sqrt(x*x+z*z)<42)palm(x,z);
+ const r=13+Math.random()*29;
+ tree(Math.cos(a)*r,Math.sin(a)*r);
 }
 
-// MOUNTAIN
-const mountainMat=new THREE.MeshStandardMaterial({color:0x56805a});
-const mountain=new THREE.Mesh(
- new THREE.ConeGeometry(17,22,8),mountainMat
-);
-mountain.position.set(-13,13,-19);
-mountain.castShadow=true;
-scene.add(mountain);
-
-// VILLAGE HOUSES
+// Houses
+function box(x,y,z,w,h,d,material){
+ const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);
+ o.position.set(x,y,z);
+ o.castShadow=true;
+ scene.add(o);
+ return o;
+}
 function house(x,z){
  const y=heightAt(x,z);
- box(x,y+1.5,z,6,3,5,
-  new THREE.MeshStandardMaterial({color:0xe4c18a}));
+ box(x,y+1.4,z,6,2.8,5,mat(0xe5c48b));
  const roof=new THREE.Mesh(
-  new THREE.ConeGeometry(4.7,3.2,4),
-  new THREE.MeshStandardMaterial({color:0x9b4931})
+  new THREE.ConeGeometry(4.5,3,4),mat(0x9a4830)
  );
- roof.position.set(x,y+4.4,z);
+ roof.position.set(x,y+4,z);
  roof.rotation.y=Math.PI/4;
- roof.castShadow=true;
  scene.add(roof);
-
- box(x,y+1,z+2.55,1.1,2,0.12,wood);
- box(x-1.7,y+1.8,z+2.58,1,.8,.12,
-  new THREE.MeshStandardMaterial({color:0x74d5ef}));
- box(x+1.7,y+1.8,z+2.58,1,.8,.12,
-  new THREE.MeshStandardMaterial({color:0x74d5ef}));
+ box(x,y+1,z+2.55,1,2,.12,wood);
 }
+house(8,8);house(17,4);house(10,17);house(-12,10);
 
-house(8,8);
-house(17,4);
-house(10,17);
-house(-10,13);
+// Mountain
+const mountain=new THREE.Mesh(
+ new THREE.ConeGeometry(16,22,8),mat(0x527a51)
+);
+mountain.position.set(-15,12,-20);
+scene.add(mountain);
 
-// DOCK
-for(let i=0;i<9;i++){
- box(0,.2,48+i*2,5,.4,1.8,wood);
-}
-for(const x of [-2.2,2.2]){
- for(let z=48;z<66;z+=6){
-  cylinder(x,-.8,z,.18,.18,3,wood);
- }
-}
+// Dock
+for(let i=0;i<9;i++)box(0,.1,48+i*2,5,.35,1.8,wood);
 
-// ROCKS
-for(let i=0;i<35;i++){
- const a=Math.random()*Math.PI*2;
- const r=20+Math.random()*30;
- const x=Math.cos(a)*r,z=Math.sin(a)*r;
- const rock=new THREE.Mesh(
-  new THREE.DodecahedronGeometry(.7+Math.random()*1.1,0),
-  new THREE.MeshStandardMaterial({color:0x777e7a})
- );
- rock.position.set(x,heightAt(x,z)+.4,z);
- rock.scale.y=.7;
- scene.add(rock);
-}
-
-// PLAYER
+// Player
 const player=new THREE.Group();
 scene.add(player);
-
-const skin=new THREE.MeshStandardMaterial({color:0xd99a69});
-const shirt=new THREE.MeshStandardMaterial({color:0x176be0});
-const pants=new THREE.MeshStandardMaterial({color:0x252b3d});
-
-const body=new THREE.Mesh(
- new THREE.CapsuleGeometry(.55,.9,4,8),shirt
-);
+const shirt=mat(0x1267d5),skin=mat(0xd69a70),pants=mat(0x242c40);
+const body=new THREE.Mesh(new THREE.CapsuleGeometry(.5,.8,4,8),shirt);
 body.position.y=1.5;
-body.castShadow=true;
 player.add(body);
-
-const head=new THREE.Mesh(
- new THREE.SphereGeometry(.43,16,12),skin
-);
-head.position.y=2.55;
+const head=new THREE.Mesh(new THREE.SphereGeometry(.4,16,12),skin);
+head.position.y=2.45;
 player.add(head);
-
 const legs=[];
-for(const x of [-.23,.23]){
- const leg=new THREE.Mesh(
-  new THREE.CylinderGeometry(.18,.2,.8,8),pants
- );
+for(const x of [-.22,.22]){
+ const leg=new THREE.Mesh(new THREE.CylinderGeometry(.17,.2,.8,8),pants);
  leg.position.set(x,.55,0);
  player.add(leg);
  legs.push(leg);
 }
 player.position.set(0,heightAt(0,0),0);
 
-// TREASURE
+// Treasure chest
 const chest=new THREE.Group();
-const chestX=-25,chestZ=-10;
-chest.position.set(chestX,heightAt(chestX,chestZ)+.5,chestZ);
+const tx=-25,tz=-10;
+chest.position.set(tx,heightAt(tx,tz),tz);
 scene.add(chest);
-
-const chestBox=new THREE.Mesh(
- new THREE.BoxGeometry(1.7,1.1,1.2),
- new THREE.MeshStandardMaterial({color:0x9b5723})
+const chestBody=new THREE.Mesh(
+ new THREE.BoxGeometry(1.7,1,1.2),mat(0x99531d)
 );
-chestBox.position.y=.55;
-chest.add(chestBox);
-
-const lid=new THREE.Mesh(
- new THREE.BoxGeometry(1.8,.25,1.3),
- new THREE.MeshStandardMaterial({color:0xffc343})
+chestBody.position.y=.5;
+chest.add(chestBody);
+const chestLid=new THREE.Mesh(
+ new THREE.BoxGeometry(1.8,.25,1.3),mat(0xffc83d)
 );
-lid.position.y=1.15;
-chest.add(lid);
+chestLid.position.y=1.1;
+chest.add(chestLid);
+const glow=new THREE.PointLight(0xffd34c,5,12);
+glow.position.y=2;
+chest.add(glow);
 
-const treasureLight=new THREE.PointLight(0xffd54a,5,12);
-treasureLight.position.y=2;
-chest.add(treasureLight);
-
-// COIN DISPLAY
-let coins=0;
-let collected=false;
-const score=document.getElementById("score");
-const message=document.getElementById("message");
-
-// INPUT
-const keys={};
+let coins=0,found=false;
+const msg=document.getElementById("message");
+function collect(){
+ if(found)return;
+ if(player.position.distanceTo(chest.position)<5){
+  found=true;coins+=100;
+  document.getElementById("coins").textContent=coins;
+  document.getElementById("mission").textContent="Mission completed!";
+  chest.visible=false;
+  msg.textContent="🏆 Treasure found! +100 coins";
+ }else msg.textContent="Move closer to the treasure!";
+}
+document.getElementById("collect").onclick=collect;
 window.addEventListener("keydown",e=>{
- keys[e.key.toLowerCase()]=true;
  if(e.key.toLowerCase()==="e")collect();
 });
-window.addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
 
-let joyX=0,joyY=0;
-let running=false;
-
+// Touch joystick
+let joyX=0,joyY=0,pointer=null;
 const stick=document.getElementById("stick");
 const knob=document.getElementById("knob");
-let pointer=null;
-
+function reset(){
+ pointer=null;joyX=joyY=0;
+ knob.style.left="35px";knob.style.top="35px";
+}
 stick.addEventListener("pointerdown",e=>{
- pointer=e.pointerId;
- stick.setPointerCapture(pointer);
- moveStick(e);
+ pointer=e.pointerId;stick.setPointerCapture(pointer);move(e);
 });
 stick.addEventListener("pointermove",e=>{
- if(pointer===e.pointerId)moveStick(e);
+ if(pointer===e.pointerId)move(e);
 });
-function moveStick(e){
+function move(e){
  const r=stick.getBoundingClientRect();
- let dx=e.clientX-(r.left+r.width/2);
- let dy=e.clientY-(r.top+r.height/2);
- const max=40;
- const length=Math.hypot(dx,dy);
- if(length>max){dx=dx/length*max;dy=dy/length*max;}
- joyX=dx/max;
- joyY=dy/max;
- knob.style.left=(34+dx)+"px";
- knob.style.top=(34+dy)+"px";
+ let dx=e.clientX-r.left-r.width/2;
+ let dy=e.clientY-r.top-r.height/2;
+ const l=Math.hypot(dx,dy),max=38;
+ if(l>max){dx*=max/l;dy*=max/l;}
+ joyX=dx/max;joyY=dy/max;
+ knob.style.left=(35+dx)+"px";
+ knob.style.top=(35+dy)+"px";
 }
-function resetStick(){
- pointer=null;joyX=0;joyY=0;
- knob.style.left="34px";knob.style.top="34px";
-}
-stick.addEventListener("pointerup",resetStick);
-stick.addEventListener("pointercancel",resetStick);
+stick.addEventListener("pointerup",reset);
+stick.addEventListener("pointercancel",reset);
 
-document.getElementById("run").addEventListener("pointerdown",()=>running=true);
-document.getElementById("run").addEventListener("pointerup",()=>running=false);
-document.getElementById("run").addEventListener("pointerleave",()=>running=false);
-document.getElementById("interact").addEventListener("click",collect);
+const keys={};
+window.addEventListener("keydown",e=>keys[e.key.toLowerCase()]=true);
+window.addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
 
-function collect(){
- if(collected)return;
- const d=player.position.distanceTo(chest.position);
- if(d<5){
-  collected=true;
-  coins+=100;
-  score.textContent=coins;
-  chest.visible=false;
-  document.getElementById("mission").textContent="Mission complete!";
-  message.textContent="🏆 Treasure discovered! You earned 100 coins!";
- }else{
-  message.textContent="Get closer to the treasure chest!";
- }
-}
-
-// GAME LOOP
 const clock=new THREE.Clock();
-let walkTime=0;
+let walk=0;
 
 function animate(){
  requestAnimationFrame(animate);
  const t=clock.getElapsedTime();
  const dt=Math.min(clock.getDelta(),.04);
 
- // WATER WAVES
- for(let i=0;i<waterPositions.count;i++){
-  const x=waterPositions.getX(i);
-  const z=waterPositions.getZ(i);
-  waterPositions.setY(
-   i,originalWater[i]+
-   Math.sin(x*.12+t*1.5)*.16+
-   Math.cos(z*.15+t)*.12
-  );
+ // Animated ocean
+ for(let i=0;i<waterPos.count;i++){
+  const x=waterPos.getX(i),z=waterPos.getZ(i);
+  waterPos.setY(i,base[i]+Math.sin(x*.12+t*1.5)*.16+
+    Math.cos(z*.15+t)*.12);
  }
- waterPositions.needsUpdate=true;
- waterGeo.computeVertexNormals();
+ waterPos.needsUpdate=true;
+ oceanGeo.computeVertexNormals();
 
- // MOVEMENT
- let forward=0,side=0;
- if(keys["w"]||keys["arrowup"])forward=1;
- if(keys["s"]||keys["arrowdown"])forward=-1;
- if(keys["a"]||keys["arrowleft"])side=-1;
- if(keys["d"]||keys["arrowright"])side=1;
-
- forward+=-joyY;
- side+=joyX;
-
- const length=Math.hypot(forward,side);
- if(length>1){forward/=length;side/=length;}
-
- const speed=running?13:7;
- const moving=length>.08;
-
- if(moving){
-  const angle=Math.atan2(side,forward);
-  player.rotation.y=angle;
-  player.position.x+=side*speed*dt;
-  player.position.z-=forward*speed*dt;
-  walkTime+=dt*(running?15:9);
-  legs[0].rotation.x=Math.sin(walkTime)*.65;
-  legs[1].rotation.x=-Math.sin(walkTime)*.65;
- }else{
-  legs.forEach(l=>l.rotation.x=0);
- }
+ // Character movement
+ let f=0,s=0;
+ if(keys.w||keys.arrowup)f++;
+ if(keys.s||keys.arrowdown)f--;
+ if(keys.a||keys.arrowleft)s--;
+ if(keys.d||keys.arrowright)s++;
+ f-=joyY;s+=joyX;
+ const len=Math.hypot(f,s);
+ if(len>1){f/=len;s/=len;}
+ if(len>.08){
+  player.position.x+=s*7*dt;
+  player.position.z-=f*7*dt;
+  player.rotation.y=Math.atan2(s,f);
+  walk+=dt*10;
+  legs[0].rotation.x=Math.sin(walk)*.6;
+  legs[1].rotation.x=-Math.sin(walk)*.6;
+ }else legs.forEach(l=>l.rotation.x=0);
 
  // Keep player on island
- const distance=Math.hypot(player.position.x,player.position.z);
- if(distance>43){
-  player.position.x*=43/distance;
-  player.position.z*=43/distance;
+ const d=Math.hypot(player.position.x,player.position.z);
+ if(d>43){
+  player.position.x*=43/d;
+  player.position.z*=43/d;
  }
  player.position.y=heightAt(player.position.x,player.position.z);
 
- // CAMERA FOLLOW
- const desired=new THREE.Vector3(
-  player.position.x,
-  player.position.y+8,
-  player.position.z+12
+ // Follow camera
+ const target=new THREE.Vector3(
+  player.position.x,player.position.y+8,player.position.z+12
  );
- camera.position.lerp(desired,.08);
- camera.lookAt(
-  player.position.x,
-  player.position.y+1.5,
-  player.position.z
- );
+ camera.position.lerp(target,.09);
+ camera.lookAt(player.position.x,player.position.y+1.4,player.position.z);
 
- // TREASURE GLOW
- if(!collected){
-  chest.rotation.y=Math.sin(t*.7)*.12;
-  treasureLight.intensity=4+Math.sin(t*3)*1.5;
- }
-
+ if(!found)glow.intensity=4+Math.sin(t*3);
  renderer.render(scene,camera);
 }
-
 animate();
 
-// START GAME
-document.getElementById("play").addEventListener("click",()=>{
+document.getElementById("play").onclick=()=>{
  document.getElementById("start").style.display="none";
-});
+};
 
-// RESIZE
 window.addEventListener("resize",()=>{
- camera.aspect=window.innerWidth/window.innerHeight;
+ camera.aspect=innerWidth/innerHeight;
  camera.updateProjectionMatrix();
- renderer.setSize(window.innerWidth,window.innerHeight);
+ renderer.setSize(innerWidth,innerHeight);
 });
 </script>
 </body>
