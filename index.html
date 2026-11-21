@@ -130,7 +130,11 @@ footer{
    <div class="icon">📹</div>
    <h3>Video Chat</h3>
    <p>Connect face-to-face with people around the world.</p>
-   <button class="btn" onclick="alert('Video matching is coming soon!')">Start Video</button>
+   <button class="btn primary" onclick="findRandomPlayer()">
+Find Someone
+</button>
+
+<p id="matchStatus"></p>
   </div>
  </div>
 </section>
@@ -258,7 +262,31 @@ async function loginUser() {
   message.textContent = "Welcome back! You are logged in.";
 }
 </script>
- 
+ <script>
+async function findRandomPlayer() {
+  const status = document.getElementById("matchStatus");
+
+  status.textContent = "Searching for a player...";
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    status.textContent = "Please log in first.";
+    return;
+  }
+
+  const { data, error } = await supabaseClient.rpc("find_match");
+
+  if (error) {
+    status.textContent = error.message;
+    return;
+  }
+
+  status.textContent = data
+    ? "Match found! Room ID: " + data
+    : "Waiting for another player...";
+}
+ </script>
 </body>
 </html>
 </body>
