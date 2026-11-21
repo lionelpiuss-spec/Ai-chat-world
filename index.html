@@ -153,10 +153,112 @@ footer{
 </section>
 </main>
 
+<section id="accounts" style="max-width:500px;margin:40px auto;padding:25px;background:#111420;border:1px solid #282c40;border-radius:16px;">
+  <h2 style="text-align:center;margin-bottom:20px;">Join AI Chat World</h2>
+
+  <input id="username" placeholder="Choose a username" style="width:100%;padding:14px;margin:8px 0;background:#202436;color:white;border:1px solid #444;border-radius:8px;">
+
+  <input id="email" type="email" placeholder="Email address" style="width:100%;padding:14px;margin:8px 0;background:#202436;color:white;border:1px solid #444;border-radius:8px;">
+
+  <input id="password" type="password" placeholder="Password" style="width:100%;padding:14px;margin:8px 0;background:#202436;color:white;border:1px solid #444;border-radius:8px;">
+
+  <button onclick="registerUser()" class="btn primary" style="width:100%;margin-top:12px;">Create Account</button>
+
+  <button onclick="loginUser()" class="btn" style="width:100%;margin-top:10px;">Login</button>
+
+  <p id="accountMessage" style="margin-top:15px;text-align:center;color:#c4b5fd;"></p>
+</section>
+ 
 <footer>
  © 2026 AI Chat World · Made for real connections.
 </footer>
 
+<script>
+async function registerUser() {
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const message = document.getElementById("accountMessage");
+
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+    message.textContent = "Username must be 3-20 letters, numbers or underscores.";
+    return;
+  }
+
+  if (!email || password.length < 8) {
+    message.textContent = "Enter a valid email and password of at least 8 characters.";
+    return;
+  }
+
+  message.textContent = "Creating account...";
+
+  const {data, error} = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {data: {username}}
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  if (data.session && data.user) {
+    const {error: profileError} = await supabaseClient
+      .from("profiles")
+      .insert({id: data.user.id, username});
+
+    if (profileError) {
+      message.textContent = profileError.message;
+      return;
+    }
+  }
+
+  message.textContent = data.session
+    ? "Account created successfully!"
+    : "Check your email to confirm your account, then log in.";
+}
+
+async function loginUser() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const message = document.getElementById("accountMessage");
+
+  message.textContent = "Logging in...";
+
+  const {data, error} = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  const username = data.user.user_metadata.username;
+
+  const {data: profile} = await supabaseClient
+    .from("profiles")
+    .select("id")
+    .eq("id", data.user.id)
+    .maybeSingle();
+
+  if (!profile && username) {
+    const {error: profileError} = await supabaseClient
+      .from("profiles")
+      .insert({id: data.user.id, username});
+
+    if (profileError) {
+      message.textContent = profileError.message;
+      return;
+    }
+  }
+
+  message.textContent = "Welcome back! You are logged in.";
+}
+</script>
+ 
 </body>
 </html>
 </body>
