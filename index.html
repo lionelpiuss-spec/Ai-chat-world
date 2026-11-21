@@ -3,377 +3,484 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Chat World</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VYBEX - Island Odyssey</title>
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;background:#080b14;color:white;
- font-family:Arial,sans-serif
-}
-header{
- padding:20px;text-align:center;
- background:linear-gradient(135deg,#101a36,#162d52);
- border-bottom:1px solid #273c62
-}
-header h1{margin:0;color:#65c8ff}
-header p{color:#b5c5df}
-nav{
- display:flex;flex-wrap:wrap;justify-content:center;
- gap:8px;padding:12px;background:#101421
-}
-button,select,input{
- background:#182338;color:white;border:1px solid #304667;
- border-radius:10px;padding:12px;cursor:pointer
-}
-button:hover{background:#26446b}
-main{max-width:850px;margin:auto;padding:15px}
-.card{
- background:#111827;border:1px solid #26334b;
- padding:18px;border-radius:16px;margin:15px 0
-}
-h2{color:#68caff}
-h3{color:#b4dfff}
-.grid{
- display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
- gap:10px
-}
-.item{
- background:#182236;border:1px solid #30415f;
- border-radius:12px;padding:14px;text-align:center
-}
-.big{font-size:32px;font-weight:bold}
-.gold{color:#ffd66b}
-.score{font-size:50px;font-weight:bold;color:#74d7ff}
-.small{font-size:13px;color:#aabbd3}
-.profile{
- display:flex;align-items:center;gap:15px;flex-wrap:wrap
-}
-.avatar{
- width:85px;height:85px;border-radius:50%;
- background:#25395d;border:4px solid #61bfff;
- display:flex;align-items:center;justify-content:center;
- font-size:35px
-}
-.hidden{display:none}
-footer{text-align:center;padding:25px;color:#71839e}
+body{margin:0;overflow:hidden;background:#62c9e8;font-family:Arial;color:white}
+canvas{display:block}
+#hud{position:fixed;top:12px;left:12px;z-index:5}
+.panel{background:#071d2ccc;padding:12px 16px;border:1px solid #ffffff44;border-radius:14px}
+#title{font-size:19px;font-weight:bold;color:#69e5ff}
+#mission{font-size:13px;margin-top:6px}
+#coins{margin-top:7px;color:#ffe16b}
+#help{position:fixed;top:12px;right:12px;z-index:5;text-align:right;font-size:12px}
+#controls{position:fixed;bottom:20px;left:20px;right:20px;z-index:5;display:flex;justify-content:space-between;align-items:end;pointer-events:none}
+#stick{width:120px;height:120px;border-radius:50%;background:#ffffff30;border:2px solid #ffffff80;position:relative;pointer-events:auto;touch-action:none}
+#knob{width:48px;height:48px;border-radius:50%;background:#ffffffbb;position:absolute;left:34px;top:34px}
+#actions{display:flex;gap:12px;pointer-events:auto}
+.action{width:65px;height:65px;border-radius:50%;border:2px solid white;background:#087caa;color:white;font-weight:bold;font-size:13px;touch-action:none}
+#message{position:fixed;bottom:155px;left:50%;transform:translateX(-50%);background:#071d2ccc;padding:10px 16px;border-radius:12px;z-index:5;text-align:center;font-size:13px;white-space:nowrap}
+#start{position:fixed;inset:0;background:linear-gradient(#063e62aa,#031a32ee);z-index:10;display:flex;align-items:center;justify-content:center;text-align:center}
+#startBox{padding:25px;max-width:350px}
+#start h1{font-size:34px;color:#6ceaff}
+#start button{padding:15px 30px;border:0;border-radius:12px;background:#00bde9;color:#001c2a;font-size:17px;font-weight:bold}
 </style>
 </head>
 <body>
 
-<header>
-<h1>🌍 AI CHAT WORLD</h1>
-<p>Connect • Discover • Compete • Create</p>
-</header>
-
-<nav>
-<button onclick="show('home')">Home</button>
-<button onclick="show('profile')">Profile</button>
-<button onclick="show('battle')">Battles</button>
-<button onclick="show('shop')">Shop</button>
-<button onclick="show('friends')">Friends</button>
-<button onclick="show('rankings')">Rankings</button>
-</nav>
-
-<main>
-
-<section id="home" class="page">
-<div class="card">
-<h2>Welcome to your world</h2>
-<p>Meet friends, customize your profile, earn coins and compete.</p>
-<div class="grid">
-<div class="item">🏆<h3>Battles</h3><button onclick="show('battle')">Play</button></div>
-<div class="item">🛍️<h3>Shop</h3><button onclick="show('shop')">Explore</button></div>
-<div class="item">👥<h3>Friends</h3><button onclick="show('friends')">Connect</button></div>
-<div class="item">🌎<h3>Rankings</h3><button onclick="show('rankings')">View</button></div>
-</div>
+<div id="hud">
+ <div class="panel">
+  <div id="title">VYBEX 🌴</div>
+  <div>ISLAND ODYSSEY</div>
+  <div id="mission">Mission: Find the hidden treasure</div>
+  <div id="coins">🪙 Coins: <span id="score">0</span></div>
+ </div>
 </div>
 
-<div class="card">
-<h2>🪙 Your Coins</h2>
-<div class="big gold" id="coinDisplay">1000</div>
-<p class="small">Demo coins only</p>
-<button onclick="show('shop')">Visit Coin Shop</button>
-</div>
-</section>
-
-<section id="profile" class="page hidden">
-<div class="card">
-<h2>👤 My Profile</h2>
-<div class="profile">
-<div class="avatar" id="avatar">😎</div>
-<div>
-<h3 id="profileName">Player</h3>
-<p id="countryDisplay">🌍 Country not selected</p>
-</div>
-</div>
-<p>Username</p>
-<input id="nameInput" placeholder="Enter username">
-<p>Country</p>
-<select id="country" onchange="setCountry()">
-<option value="">Choose country</option>
-<option>Uganda</option><option>Kenya</option>
-<option>Tanzania</option><option>Rwanda</option>
-<option>Nigeria</option><option>Ghana</option>
-<option>South Africa</option><option>Egypt</option>
-<option>United States</option><option>United Kingdom</option>
-<option>Canada</option><option>India</option>
-<option>Brazil</option><option>France</option>
-<option>Germany</option><option>Japan</option>
-<option>Other</option>
-</select>
-<p>Friend code</p>
-<div id="myCode">ACW-0000</div>
-<button onclick="copyCode()">Copy Friend Code</button>
-<button onclick="saveProfile()">Save Profile</button>
-</div>
-</section>
-
-<section id="battle" class="page hidden">
-<div class="card">
-<h2>⚔️ Battle Arena</h2>
-<p>Demo battles to test your scoring system.</p>
-<div class="grid">
-<div class="item">
-<h3>Winner</h3>
-<div class="score" id="winScore">9.0</div>
-</div>
-<div class="item">
-<h3>Loser</h3>
-<div class="score" id="loseScore">1.0</div>
-</div>
+<div id="help" class="panel">
+ Explore the island<br>
+ WASD / Arrow keys<br>
+ E = Collect treasure
 </div>
 
-<button onclick="battle(9)">🏆 Win — 9.0</button>
-<button onclick="battle(10)">👑 Perfect Win — 10.0</button>
-<button onclick="battle(8)">Win — 8.0</button>
-<p id="battleResult"></p>
+<div id="message">Explore the island and find the treasure!</div>
+
+<div id="controls">
+ <div id="stick"><div id="knob"></div></div>
+ <div id="actions">
+  <button class="action" id="run">RUN</button>
+  <button class="action" id="interact">PICK UP</button>
+ </div>
 </div>
 
-<div class="card">
-<h3>🏅 Score rules</h3>
-<p>9.0 winner → 1.0 loser</p>
-<p>10.0 winner → 0.0 loser — special animation</p>
-<p>Other scores → loser receives the difference from 10</p>
-</div>
-</section>
-
-<section id="shop" class="page hidden">
-<div class="card">
-<h2>🛍️ Coin Shop</h2>
-<p>Your balance: <span class="gold" id="shopCoins">1000</span> coins</p>
-<h3>Coin packages (demo)</h3>
-<div class="grid">
-<div class="item">🪙 3,000<br><button onclick="addCoins(3000)">Claim demo</button></div>
-<div class="item">🪙 5,000<br><button onclick="addCoins(5000)">Claim demo</button></div>
-<div class="item">🪙 10,000<br><button onclick="addCoins(10000)">Claim demo</button></div>
-<div class="item">🪙 50,000<br><button onclick="addCoins(50000)">Claim demo</button></div>
-<div class="item">🪙 100,000<br><button onclick="addCoins(100000)">Claim demo</button></div>
-<div class="item">🪙 500,000<br><button onclick="addCoins(500000)">Claim demo</button></div>
-</div>
-<p class="small">These buttons add test coins only. They are not purchases.</div>
-
-<div class="card">
-<h3>🆓 Free profile pictures</h3>
-<div class="grid">
-<div class="item">😎<br><button onclick="buyAvatar('😎',0)">Use free</button></div>
-<div class="item">👑<br><button onclick="buyAvatar('👑',0)">Use free</button></div>
-<div class="item">🐺<br><button onclick="buyAvatar('🐺',0)">Use free</button></div>
-<div class="item">🦊<br><button onclick="buyAvatar('🦊',0)">Use free</button></div>
-<div class="item">🎮<br><button onclick="buyAvatar('🎮',0)">Use free</button></div>
-<div class="item">🌟<br><button onclick="buyAvatar('🌟',0)">Use free</button></div>
-<div class="item">🔥<br><button onclick="buyAvatar('🔥',0)">Use free</button></div>
-<div class="item">⚡<br><button onclick="buyAvatar('⚡',0)">Use free</button></div>
-</div>
+<div id="start">
+ <div id="startBox">
+  <h1>VYBEX</h1>
+  <h2>ISLAND ODYSSEY</h2>
+  <p>Discover a tropical world. Explore beaches, forests and hidden treasures.</p>
+  <button id="play">ENTER ISLAND</button>
+ </div>
 </div>
 
-<div class="card">
-<h3>💎 Premium profile pictures</h3>
-<div class="grid">
-<div class="item">💎<br>500 coins<button onclick="buyAvatar('💎',500)">Buy</button></div>
-<div class="item">🦁<br>750 coins<button onclick="buyAvatar('🦁',750)">Buy</button></div>
-<div class="item">👹<br>1000 coins<button onclick="buyAvatar('👹',1000)">Buy</button></div>
-<div class="item">🐉<br>1500 coins<button onclick="buyAvatar('🐉',1500)">Buy</button></div>
-<div class="item">🚀<br>2000 coins<button onclick="buyAvatar('🚀',2000)">Buy</button></div>
-<div class="item">🛸<br>2500 coins<button onclick="buyAvatar('🛸',2500)">Buy</button></div>
-</div>
-</div>
-
-<div class="card">
-<h3>🎨 Profile colours</h3>
-<div class="grid">
-<div class="item">🔵 Blue<br>Free<button onclick="buyColor('#348dff',0)">Use</button></div>
-<div class="item">🟣 Purple<br>300 coins<button onclick="buyColor('#a65dff',300)">Buy</button></div>
-<div class="item">🟢 Green<br>300 coins<button onclick="buyColor('#28cf85',300)">Buy</button></div>
-<div class="item">🔴 Red<br>500 coins<button onclick="buyColor('#ff5252',500)">Buy</button></div>
-<div class="item">🌈 Rainbow<br>1000 coins<button onclick="buyColor('rainbow',1000)">Buy</button></div>
-<div class="item">✨ Gold<br>1500 coins<button onclick="buyColor('#ffd166',1500)">Buy</button></div>
-</div>
-</div>
-
-<div class="card">
-<h3>🖼️ Profile borders</h3>
-<div class="grid">
-<div class="item">Silver border<br>Free<button onclick="buyBorder('silver',0)">Use</button></div>
-<div class="item">Gold border<br>500 coins<button onclick="buyBorder('gold',500)">Buy</button></div>
-<div class="item">Neon border<br>1000 coins<button onclick="buyBorder('neon',1000)">Buy</button></div>
-</div>
-</div>
-</section>
-
-<section id="friends" class="page hidden">
-<div class="card">
-<h2>👥 Friends</h2>
-<p>Share your code with people you know and trust.</p>
-<p>Your code: <b id="friendCode">ACW-0000</b></p>
-<button onclick="copyCode()">Copy my code</button>
-<p>Enter friend's code</p>
-<input id="friendInput" placeholder="ACW-XXXX">
-<button onclick="addFriend()">Add friend</button>
-<div id="friendsList"></div>
-</div>
-</section>
-
-<section id="rankings" class="page hidden">
-<div class="card">
-<h2>🏆 Rankings</h2>
-<p>Demo leaderboard. Real global rankings need a server.</p>
-<div id="rankList"></div>
-</div>
-</section>
-
-</main>
-
-<footer>AI CHAT WORLD © 2026<br>Connect • Discover • Compete • Create</footer>
-
-<script>
-let coins=1000;
-let myCode="ACW-"+Math.floor(1000+Math.random()*9000);
-let friends=[];
-
-function show(id){
- document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
- document.getElementById(id).classList.remove('hidden');
-}
-
-function updateCoins(){
- document.getElementById('coinDisplay').textContent=coins;
- document.getElementById('shopCoins').textContent=coins;
-}
-
-function addCoins(n){
- coins+=n;
- updateCoins();
- alert(n+" demo coins added!");
-}
-
-function battle(score){
- let loser=Math.max(0,10-score);
- document.getElementById('winScore').textContent=score.toFixed(1);
- document.getElementById('loseScore').textContent=loser.toFixed(1);
- let result=document.getElementById('battleResult');
- if(score===10){
-  result.innerHTML="👑✨ PERFECT VICTORY! 10.0 ✨👑<br>🏆 Loser: 0.0";
-  result.style.fontSize="24px";
-  result.style.color="#ffd166";
- }else{
-  result.innerHTML="🏆 Winner: "+score.toFixed(1)+" | Loser: "+loser.toFixed(1);
-  result.style.fontSize="18px";
-  result.style.color="#74d7ff";
+<script type="importmap">
+{
+ "imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
  }
 }
-
-function buyAvatar(icon,cost){
- if(coins<cost){alert("Not enough demo coins!");return;}
- coins-=cost;
- document.getElementById('avatar').textContent=icon;
- updateCoins();
- alert("Profile picture selected!");
-}
-
-function buyColor(color,cost){
- if(coins<cost){alert("Not enough demo coins!");return;}
- coins-=cost;
- let a=document.getElementById('avatar');
- a.style.borderColor=color==='rainbow'?'#ff72df':color;
- updateCoins();
- alert("Colour applied!");
-}
-
-function buyBorder(type,cost){
- if(coins<cost){alert("Not enough demo coins!");return;}
- coins-=cost;
- let a=document.getElementById('avatar');
- a.style.borderWidth=type==='neon'?'6px':'4px';
- a.style.boxShadow=type==='neon'?'0 0 18px #60eaff':'none';
- a.style.borderColor=type==='gold'?'#ffd166':'#b8c5d9';
- updateCoins();
- alert("Border equipped!");
-}
-
-function saveProfile(){
- let n=document.getElementById('nameInput').value.trim();
- if(n)document.getElementById('profileName').textContent=n;
-}
-
-function setCountry(){
- let c=document.getElementById('country').value;
- document.getElementById('countryDisplay').textContent=c?'🌍 '+c:'🌍 Country not selected';
-}
-
-function copyCode(){
- navigator.clipboard.writeText(myCode);
- alert("Friend code copied: "+myCode);
-}
-
-function addFriend(){
- let code=document.getElementById('friendInput').value.trim().toUpperCase();
- if(!code.startsWith("ACW-")||code===myCode){
-  alert("Check that friend code.");return;
- }
- if(friends.includes(code)){alert("Already added.");return;}
- friends.push(code);
- document.getElementById('friendsList').innerHTML=
- friends.map(f=>"<p>👤 "+f+"</p>").join("");
- alert("Friend added to demo list!");
-}
-
-document.getElementById('myCode').textContent=myCode;
-document.getElementById('friendCode').textContent=myCode;
-
-document.getElementById('rankList').innerHTML=
- "<p>🥇 Champion — 10.0</p>"+
- "<p>🥈 Elite — 9.0</p>"+
- "<p>🥉 Rising Star — 8.0</p>"+
- "<p>4. Player — 7.0</p>"+
- "<p>5. Player — 6.0</p>";
-
-updateCoins();
 </script>
-</body>
-</html> 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL";
-const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY";
+<script type="module">
+import * as THREE from "three";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87d9f5);
+scene.fog = new THREE.Fog(0x87d9f5,90,190);
+
+const camera = new THREE.PerspectiveCamera(
+ 65,window.innerWidth/window.innerHeight,0.1,400
 );
 
-console.log("AI Chat World Supabase connected");
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xc8f3ff,0x557044,2));
+
+const sun = new THREE.DirectionalLight(0xffffff,2.3);
+sun.position.set(-40,70,30);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024,1024);
+scene.add(sun);
+
+// MATERIALS
+const sand = new THREE.MeshStandardMaterial({color:0xe9d19a});
+const grass = new THREE.MeshStandardMaterial({color:0x399b55});
+const wood = new THREE.MeshStandardMaterial({color:0x80502d});
+const leaf = new THREE.MeshStandardMaterial({color:0x16834c});
+const waterMat = new THREE.MeshStandardMaterial({
+ color:0x078fc1,
+ roughness:0.25,
+ metalness:0.18,
+ transparent:true,
+ opacity:0.92
+});
+
+// ISLAND TERRAIN
+function heightAt(x,z){
+ const d=Math.sqrt(x*x+z*z);
+ return Math.max(0,5-d*0.075)+
+ Math.sin(x*.16)*Math.cos(z*.13)*1.1+
+ Math.sin(z*.31+x*.1)*.4;
+}
+
+const geo = new THREE.PlaneGeometry(125,125,110,110);
+geo.rotateX(-Math.PI/2);
+const pos=geo.attributes.position;
+
+for(let i=0;i<pos.count;i++){
+ const x=pos.getX(i),z=pos.getZ(i);
+ const d=Math.sqrt(x*x+z*z);
+ pos.setY(i,heightAt(x,z)-Math.max(0,d-45)*.22);
+}
+geo.computeVertexNormals();
+
+const island = new THREE.Mesh(geo,grass);
+island.receiveShadow=true;
+scene.add(island);
+
+// BEACH RING
+const beachGeo = new THREE.RingGeometry(43,57,100);
+beachGeo.rotateX(-Math.PI/2);
+const beach = new THREE.Mesh(beachGeo,sand);
+beach.position.y=.05;
+scene.add(beach);
+
+// OCEAN
+const waterGeo=new THREE.PlaneGeometry(260,260,100,100);
+waterGeo.rotateX(-Math.PI/2);
+const water=new THREE.Mesh(waterGeo,waterMat);
+water.position.y=-1.3;
+scene.add(water);
+const waterPositions=waterGeo.attributes.position;
+const originalWater=[];
+for(let i=0;i<waterPositions.count;i++){
+ originalWater.push(waterPositions.getY(i));
+}
+
+// OBJECT HELPERS
+function box(x,y,z,sx,sy,sz,mat){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat);
+ m.position.set(x,y,z);
+ m.castShadow=true;
+ m.receiveShadow=true;
+ scene.add(m);
+ return m;
+}
+
+function cylinder(x,y,z,r1,r2,h,mat){
+ const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,10),mat);
+ m.position.set(x,y,z);
+ m.castShadow=true;
+ scene.add(m);
+ return m;
+}
+
+// PALM TREES
+function palm(x,z){
+ const y=heightAt(x,z);
+ cylinder(x,y+3,z,.35,.55,6,wood);
+
+ for(let i=0;i<7;i++){
+  const a=i*Math.PI*2/7;
+  const branch=new THREE.Mesh(
+   new THREE.ConeGeometry(.55,4,5),leaf
+  );
+  branch.position.set(
+   x+Math.cos(a)*1.3,
+   y+5.1,
+   z+Math.sin(a)*1.3
+  );
+  branch.rotation.z=Math.cos(a)*.9;
+  branch.rotation.x=Math.sin(a)*.9;
+  branch.castShadow=true;
+  scene.add(branch);
+ }
+ const crown=new THREE.Mesh(
+  new THREE.SphereGeometry(.7,8,8),leaf
+ );
+ crown.position.set(x,y+5.7,z);
+ scene.add(crown);
+}
+
+// FOREST
+for(let i=0;i<100;i++){
+ const a=Math.random()*Math.PI*2;
+ const r=14+Math.random()*34;
+ const x=Math.cos(a)*r,z=Math.sin(a)*r;
+ if(Math.sqrt(x*x+z*z)<42)palm(x,z);
+}
+
+// MOUNTAIN
+const mountainMat=new THREE.MeshStandardMaterial({color:0x56805a});
+const mountain=new THREE.Mesh(
+ new THREE.ConeGeometry(17,22,8),mountainMat
+);
+mountain.position.set(-13,13,-19);
+mountain.castShadow=true;
+scene.add(mountain);
+
+// VILLAGE HOUSES
+function house(x,z){
+ const y=heightAt(x,z);
+ box(x,y+1.5,z,6,3,5,
+  new THREE.MeshStandardMaterial({color:0xe4c18a}));
+ const roof=new THREE.Mesh(
+  new THREE.ConeGeometry(4.7,3.2,4),
+  new THREE.MeshStandardMaterial({color:0x9b4931})
+ );
+ roof.position.set(x,y+4.4,z);
+ roof.rotation.y=Math.PI/4;
+ roof.castShadow=true;
+ scene.add(roof);
+
+ box(x,y+1,z+2.55,1.1,2,0.12,wood);
+ box(x-1.7,y+1.8,z+2.58,1,.8,.12,
+  new THREE.MeshStandardMaterial({color:0x74d5ef}));
+ box(x+1.7,y+1.8,z+2.58,1,.8,.12,
+  new THREE.MeshStandardMaterial({color:0x74d5ef}));
+}
+
+house(8,8);
+house(17,4);
+house(10,17);
+house(-10,13);
+
+// DOCK
+for(let i=0;i<9;i++){
+ box(0,.2,48+i*2,5,.4,1.8,wood);
+}
+for(const x of [-2.2,2.2]){
+ for(let z=48;z<66;z+=6){
+  cylinder(x,-.8,z,.18,.18,3,wood);
+ }
+}
+
+// ROCKS
+for(let i=0;i<35;i++){
+ const a=Math.random()*Math.PI*2;
+ const r=20+Math.random()*30;
+ const x=Math.cos(a)*r,z=Math.sin(a)*r;
+ const rock=new THREE.Mesh(
+  new THREE.DodecahedronGeometry(.7+Math.random()*1.1,0),
+  new THREE.MeshStandardMaterial({color:0x777e7a})
+ );
+ rock.position.set(x,heightAt(x,z)+.4,z);
+ rock.scale.y=.7;
+ scene.add(rock);
+}
+
+// PLAYER
+const player=new THREE.Group();
+scene.add(player);
+
+const skin=new THREE.MeshStandardMaterial({color:0xd99a69});
+const shirt=new THREE.MeshStandardMaterial({color:0x176be0});
+const pants=new THREE.MeshStandardMaterial({color:0x252b3d});
+
+const body=new THREE.Mesh(
+ new THREE.CapsuleGeometry(.55,.9,4,8),shirt
+);
+body.position.y=1.5;
+body.castShadow=true;
+player.add(body);
+
+const head=new THREE.Mesh(
+ new THREE.SphereGeometry(.43,16,12),skin
+);
+head.position.y=2.55;
+player.add(head);
+
+const legs=[];
+for(const x of [-.23,.23]){
+ const leg=new THREE.Mesh(
+  new THREE.CylinderGeometry(.18,.2,.8,8),pants
+ );
+ leg.position.set(x,.55,0);
+ player.add(leg);
+ legs.push(leg);
+}
+player.position.set(0,heightAt(0,0),0);
+
+// TREASURE
+const chest=new THREE.Group();
+const chestX=-25,chestZ=-10;
+chest.position.set(chestX,heightAt(chestX,chestZ)+.5,chestZ);
+scene.add(chest);
+
+const chestBox=new THREE.Mesh(
+ new THREE.BoxGeometry(1.7,1.1,1.2),
+ new THREE.MeshStandardMaterial({color:0x9b5723})
+);
+chestBox.position.y=.55;
+chest.add(chestBox);
+
+const lid=new THREE.Mesh(
+ new THREE.BoxGeometry(1.8,.25,1.3),
+ new THREE.MeshStandardMaterial({color:0xffc343})
+);
+lid.position.y=1.15;
+chest.add(lid);
+
+const treasureLight=new THREE.PointLight(0xffd54a,5,12);
+treasureLight.position.y=2;
+chest.add(treasureLight);
+
+// COIN DISPLAY
+let coins=0;
+let collected=false;
+const score=document.getElementById("score");
+const message=document.getElementById("message");
+
+// INPUT
+const keys={};
+window.addEventListener("keydown",e=>{
+ keys[e.key.toLowerCase()]=true;
+ if(e.key.toLowerCase()==="e")collect();
+});
+window.addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
+
+let joyX=0,joyY=0;
+let running=false;
+
+const stick=document.getElementById("stick");
+const knob=document.getElementById("knob");
+let pointer=null;
+
+stick.addEventListener("pointerdown",e=>{
+ pointer=e.pointerId;
+ stick.setPointerCapture(pointer);
+ moveStick(e);
+});
+stick.addEventListener("pointermove",e=>{
+ if(pointer===e.pointerId)moveStick(e);
+});
+function moveStick(e){
+ const r=stick.getBoundingClientRect();
+ let dx=e.clientX-(r.left+r.width/2);
+ let dy=e.clientY-(r.top+r.height/2);
+ const max=40;
+ const length=Math.hypot(dx,dy);
+ if(length>max){dx=dx/length*max;dy=dy/length*max;}
+ joyX=dx/max;
+ joyY=dy/max;
+ knob.style.left=(34+dx)+"px";
+ knob.style.top=(34+dy)+"px";
+}
+function resetStick(){
+ pointer=null;joyX=0;joyY=0;
+ knob.style.left="34px";knob.style.top="34px";
+}
+stick.addEventListener("pointerup",resetStick);
+stick.addEventListener("pointercancel",resetStick);
+
+document.getElementById("run").addEventListener("pointerdown",()=>running=true);
+document.getElementById("run").addEventListener("pointerup",()=>running=false);
+document.getElementById("run").addEventListener("pointerleave",()=>running=false);
+document.getElementById("interact").addEventListener("click",collect);
+
+function collect(){
+ if(collected)return;
+ const d=player.position.distanceTo(chest.position);
+ if(d<5){
+  collected=true;
+  coins+=100;
+  score.textContent=coins;
+  chest.visible=false;
+  document.getElementById("mission").textContent="Mission complete!";
+  message.textContent="🏆 Treasure discovered! You earned 100 coins!";
+ }else{
+  message.textContent="Get closer to the treasure chest!";
+ }
+}
+
+// GAME LOOP
+const clock=new THREE.Clock();
+let walkTime=0;
+
+function animate(){
+ requestAnimationFrame(animate);
+ const t=clock.getElapsedTime();
+ const dt=Math.min(clock.getDelta(),.04);
+
+ // WATER WAVES
+ for(let i=0;i<waterPositions.count;i++){
+  const x=waterPositions.getX(i);
+  const z=waterPositions.getZ(i);
+  waterPositions.setY(
+   i,originalWater[i]+
+   Math.sin(x*.12+t*1.5)*.16+
+   Math.cos(z*.15+t)*.12
+  );
+ }
+ waterPositions.needsUpdate=true;
+ waterGeo.computeVertexNormals();
+
+ // MOVEMENT
+ let forward=0,side=0;
+ if(keys["w"]||keys["arrowup"])forward=1;
+ if(keys["s"]||keys["arrowdown"])forward=-1;
+ if(keys["a"]||keys["arrowleft"])side=-1;
+ if(keys["d"]||keys["arrowright"])side=1;
+
+ forward+=-joyY;
+ side+=joyX;
+
+ const length=Math.hypot(forward,side);
+ if(length>1){forward/=length;side/=length;}
+
+ const speed=running?13:7;
+ const moving=length>.08;
+
+ if(moving){
+  const angle=Math.atan2(side,forward);
+  player.rotation.y=angle;
+  player.position.x+=side*speed*dt;
+  player.position.z-=forward*speed*dt;
+  walkTime+=dt*(running?15:9);
+  legs[0].rotation.x=Math.sin(walkTime)*.65;
+  legs[1].rotation.x=-Math.sin(walkTime)*.65;
+ }else{
+  legs.forEach(l=>l.rotation.x=0);
+ }
+
+ // Keep player on island
+ const distance=Math.hypot(player.position.x,player.position.z);
+ if(distance>43){
+  player.position.x*=43/distance;
+  player.position.z*=43/distance;
+ }
+ player.position.y=heightAt(player.position.x,player.position.z);
+
+ // CAMERA FOLLOW
+ const desired=new THREE.Vector3(
+  player.position.x,
+  player.position.y+8,
+  player.position.z+12
+ );
+ camera.position.lerp(desired,.08);
+ camera.lookAt(
+  player.position.x,
+  player.position.y+1.5,
+  player.position.z
+ );
+
+ // TREASURE GLOW
+ if(!collected){
+  chest.rotation.y=Math.sin(t*.7)*.12;
+  treasureLight.intensity=4+Math.sin(t*3)*1.5;
+ }
+
+ renderer.render(scene,camera);
+}
+
+animate();
+
+// START GAME
+document.getElementById("play").addEventListener("click",()=>{
+ document.getElementById("start").style.display="none";
+});
+
+// RESIZE
+window.addEventListener("resize",()=>{
+ camera.aspect=window.innerWidth/window.innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(window.innerWidth,window.innerHeight);
+});
 </script>
-supabaseClient
-  .from("profiles")
-  .select("id")
-  .limit(1)
-  .then(({ data, error }) => {
-    if (error) {
-      console.error("Supabase error:", error.message);
-    } else {
-      console.log("AI Chat World connected successfully!");
-    }
-  });
-<title>VYBEX - Meet the World</title>
+</body>
+</html>
