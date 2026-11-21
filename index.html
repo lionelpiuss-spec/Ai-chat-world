@@ -104,7 +104,50 @@ footer{
  <div class="status">● Real people. Real connections.</div>
 </section>
 
+
 <section class="section" id="battles">
+  <div style="text-align:center;margin-bottom:35px">
+    <div class="tag">⚔ THE ARENA IS OPEN</div>
+    <h2 style="font-size:38px">Larp Battles</h2>
+    <p class="subtitle">Enter the arena. Challenge. Compete. Rise.</p>
+  </div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="icon">⚔️</div>
+      <h3>Random Battle</h3>
+      <p>Find an available player and enter a competitive challenge.</p>
+      <button class="btn primary" onclick="startBattle()">
+        Find Opponent
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="icon">🏆</div>
+      <h3>Leaderboard</h3>
+      <p>Discover the highest-rated players in AI Chat World.</p>
+      <button class="btn" onclick="showLeaderboard()">
+        View Rankings
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="icon">👤</div>
+      <h3>My Battle Profile</h3>
+      <p>View your player rating and battle progress.</p>
+      <button class="btn" onclick="showBattleProfile()">
+        My Profile
+      </button>
+    </div>
+
+  </div>
+
+  <div id="battleStatus" style="text-align:center;margin-top:30px;color:#c4b5fd">
+    Welcome to the arena.
+  </div>
+</section>
+ 
  <h2>Enter The Arena</h2>
  <p class="subtitle">Challenge yourself and other people.</p>
  <div class="cards">
@@ -286,6 +329,77 @@ async function findRandomPlayer() {
     ? "Match found! Room ID: " + data
     : "Waiting for another player...";
 }
+<script>
+async function startBattle() {
+  const status = document.getElementById("battleStatus");
+
+  const {data: {user}} = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    status.textContent = "Please log in before entering battles.";
+    return;
+  }
+
+  status.textContent = "Checking battle matchmaking...";
+
+  const {data, error} = await supabaseClient.rpc("find_match");
+
+  if (error) {
+    status.textContent = error.message;
+    return;
+  }
+
+  status.textContent = data
+    ? "Opponent found! Battle room: " + data
+    : "Searching for an opponent...";
+}
+
+async function showLeaderboard() {
+  const status = document.getElementById("battleStatus");
+
+  const {data, error} = await supabaseClient
+    .from("profiles")
+    .select("username,rating")
+    .order("rating", {ascending:false})
+    .limit(10);
+
+  if (error) {
+    status.textContent = error.message;
+    return;
+  }
+
+  status.innerHTML = "<h3>🏆 Top Players</h3>" +
+    data.map((p,i) =>
+      `<p>${i+1}. ${p.username} — ${p.rating}/10</p>`
+    ).join("");
+}
+
+async function showBattleProfile() {
+  const status = document.getElementById("battleStatus");
+
+  const {data: {user}} = await supabaseClient.auth.getUser();
+
+  if (!user) {
+    status.textContent = "Please log in first.";
+    return;
+  }
+
+  const {data,error} = await supabaseClient
+    .from("profiles")
+    .select("username,rating")
+    .eq("id",user.id)
+    .single();
+
+  if (error) {
+    status.textContent = error.message;
+    return;
+  }
+
+  status.innerHTML =
+    `<h3>⚔ ${data.username}</h3><p>Rating: ${data.rating}/10</p>`;
+}
+</script>
+ 
  </script>
 </body>
 </html>
